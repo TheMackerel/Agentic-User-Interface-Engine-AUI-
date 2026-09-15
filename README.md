@@ -3,33 +3,56 @@
 **Documentation-only repository. The source code is not public.**
 *[Versione italiana](./README.it.md)*
 
+> **Wallpaper Engine, but for assistants.** Wallpaper Engine ships almost no
+> wallpapers of its own: it is the thing that runs the ones other people make,
+> plus a Workshop that moves them around. AUI is that layer for the desktop
+> assistant — the engine underneath the character, not another character.
+
 ---
 
 ## What it is
 
-AUI is a Windows desktop runtime that hosts AI agents. An agent is a
-folder: a manifest declaring who the character is, which voice it speaks with,
-which avatar it wears and which emotions it can show. The runtime supplies
-everything the folder does not — the local models, the audio pipeline, the
-process supervision, the protocol and the security fence.
+The name is the specification, one word at a time.
 
-The reference point is Wallpaper Engine: a program that ships almost no content
-of its own and instead runs what other people build. Same shape, different
-payload.
+- **Agentic** — what runs on top is an agent, not a picture: it hears you,
+  answers in its own voice, moves its face while it speaks, and remembers what
+  you just said.
+- **User** — it runs on the machine of the person using it. Their GPU, their
+  models, their files. No account, no cloud round trip, no subscription.
+- **Interface** — the agent is something you see and talk to: a transparent
+  overlay on the desktop, a face, a voice, a chat window. Not an API, not a
+  terminal.
+- **Engine** — the base architecture, and nothing above it. Who the character is,
+  how it sounds, how it looks, which expressions and effects it has: that is
+  content, and content belongs to whoever makes it.
 
-Mia is the first agent running on it, and the product going to Steam. Speech
-recognition, language model and speech synthesis all run as local processes on
-the user's machine: no account, no cloud round trip, no subscription.
+So an agent is a folder, and the engine runs folders. The one shipped with the
+app is **Mia** — the demo scene, the way a game engine ships one. Everything that
+makes her *her* lives in that folder and none of it lives in the app: put another
+folder next to hers and the desktop has someone else's character on it, with
+their voice and their expressions, without recompiling anything.
+
+**What it is not:** a collection of AI agents, and not an agent framework for
+developers. It is the layer below both — the part that has to work before anyone
+can drop in their favourite character.
+
+Mia is the first agent running on it, and the product going to Steam.
 
 > [DA INSERIRE] 20–30 s demo video: one spoken turn — microphone, answer,
-> lip-sync. · [DA INSERIRE] screenshot of the overlay on a real desktop.
+> lip-sync. · [DA INSERIRE] screenshot of the overlay on a real desktop. ·
+> [DA INSERIRE] 15 s clip: the same engine, two different characters.
 
 ---
 
 ## The problem
 
-A local agent looks like one application and is not.
+Shipping one assistant is an app. Turning it into something other people can
+build on is a different problem, and four hard constraints sit underneath it.
 
+- **One application hardcodes one character.** Changing the voice, the
+  expressions, the face or the model means recompiling — which is exactly what
+  makes an assistant an app instead of a platform. This is the reason for an
+  engine.
 - **Three models, three lifecycles.** Speech-to-text, language model and
   synthesis are separate runtimes with incompatible dependency trees. Linked
   in-process, a model that dies takes the window with it.
@@ -41,13 +64,11 @@ A local agent looks like one application and is not.
   measurable in a log.
 - **The desktop is not a window.** A transparent always-on-top overlay decides,
   per pixel, whether a click belongs to the agent or to the desktop behind it.
-- **One application hardcodes one character.** Changing voice, expressions or
-  model means recompiling — which is what makes an assistant an app rather than
-  a runtime.
 
-The last point is why this is an engine; the others are why it is a runtime and
-not a plugin. The app owns processes, protocol, timing and the security fence.
-Everything a single-purpose app would hardcode is declared by the pack.
+The first point is why this is an engine. The others are why the engine has to
+own the processes, the protocol, the timing and the security fence — and why
+everything above that line is *declared* by the pack instead of coded into the
+app.
 
 ---
 
@@ -84,9 +105,7 @@ flowchart LR
     CORE <--> MEM
 ```
 
-**Lifecycle of an agent.** Packs are discovered in two places — shipped with the
-app, and installed by the user. A user pack with the same id wins, so a shipped
-pack can be corrected without patching the app.
+**Lifecycle of an agent.**
 
 ```mermaid
 stateDiagram-v2
@@ -111,7 +130,7 @@ sequenceDiagram
     participant T as Synthesis
     participant A as Avatar
 
-    U->>E: push to talk; microphone captured into a ring buffer
+    U->>E: push to talk, microphone into a ring buffer
     E->>S: audio
     S-->>E: transcript and detected language
     E->>L: persona + scene + app instructions + memory + rolling history
@@ -125,10 +144,58 @@ sequenceDiagram
 ```
 
 **Memory**, today: a persisted profile — name, preferences, projects, recent
-topics — injected into the prompt, plus a rolling conversation window capped by
-a character budget rather than a turn count, so laconic turns do not collapse
-continuity and long ones do not blow the context. The long-term layer is
-designed and unwritten (see Roadmap).
+topics — injected into the prompt, plus a rolling conversation window capped by a
+character budget rather than a turn count, so laconic turns do not collapse
+continuity and long ones do not blow the context. The long-term layer is designed
+and unwritten (see Roadmap).
+
+---
+
+## The Workshop: how someone else's character gets on the desktop
+
+```mermaid
+flowchart LR
+    subgraph creator["A creator"]
+        MAN["A folder<br/>manifest + persona text"]
+        DECL["Declares: character · voice<br/>expressions · motion · effects"]
+    end
+
+    subgraph dist["Distribution"]
+        DIR["User packs directory<br/>works today"]
+        WS["Steam Workshop<br/>subscribe and update — planned"]
+    end
+
+    subgraph engine["AUI runtime"]
+        DISC["Discovery at startup<br/>bundled + user folder<br/>user pack wins on the same id"]
+        VAL["Validation<br/>warns and keeps going<br/>path fence refuses"]
+        RUN["Active agent"]
+    end
+
+    MAN --> DECL
+    DECL --> DIR
+    DECL -.-> WS
+    DIR --> DISC
+    WS -.-> DISC
+    DISC --> VAL
+    VAL --> RUN
+```
+
+*Dotted = planned, not implemented.*
+
+A pack is a folder in the user's own directory, found at startup next to the
+shipped one. Same id as a bundled pack, and the user's copy wins — so a shipped
+character can be corrected without patching the app. A broken manifest does not
+make a pack disappear: it stays in the list, marked invalid, with the reason,
+because a character that vanishes without explanation is worse than one that
+cannot smile. Validation warns rather than refuses, with one exception: a pack
+that points **outside its own folder** is refused, since that is not an aesthetic
+defect. Voice engines travel exactly the same way — a folder with a manifest, and
+the proof is a working backend made of a manifest and a short script, with no
+native code in it.
+
+| Works today | Declared, no consumer yet | Planned |
+|---|---|---|
+| Persona text per language · voice binding per language · emotion vocabulary · expression map · user pack overrides bundled · path fence · invalid packs stay listed · voice engines as folders | `[effects]` (the slot is parsed, validated and logged — deliberately empty) · `[avatar.motion]` amplitudes (the motion layer is Roadmap 1) · the avatar model inside the pack (the schema accepts it; loading a rig from the pack folder is Roadmap 2) | Steam Workshop as the distribution channel · importing third-party character cards, with their prompt-bearing fields discarded |
 
 ---
 
@@ -167,8 +234,9 @@ Plain text with a marker separating what is spoken from what is only shown; a
 pure state machine splits the stream and strips markers before anything reaches
 the user or the speakers. Imported third-party character cards have their
 prompt-bearing fields discarded by design — an app that executes prompts shipped
-inside content is injectable through content. Rejected: a grammar-constrained
-JSON turn, which small models degrade badly under.
+inside content is injectable through content, and on a platform the content comes
+from strangers. Rejected: a grammar-constrained JSON turn, which small models
+degrade badly under.
 *Cost:* the model will get the format wrong, so the degradation ladder is code —
 16 golden cases, each replayed at several stream chunk sizes, because a marker
 split across two tokens is not a bug you find by hand.
@@ -188,8 +256,8 @@ The candidate with voice cloning measured RTF 2.01x and 6.8 s to first audio
 against a 3–4 s target. Replaced by an 82M ONNX model that runs faster than real
 time on CPU.
 *Cost, accepted and written down:* no voice cloning in 1.0. The gain is
-structural — synthesis leaves the VRAM budget entirely, and a 3–4 GB
-Python/CUDA dependency leaves the installer with it.
+structural — synthesis leaves the VRAM budget entirely, and a 3–4 GB Python/CUDA
+dependency leaves the installer with it.
 
 **7. Lip-sync computed by the app, not supplied by the engine.**
 Text to phonemes via an external grapheme-to-phoneme binary run as a separate
@@ -205,8 +273,9 @@ with a 5 ms tolerance exists to catch them drifting apart.
 The app says "look there", "this mouth pose", "happy". The backend declares what
 the rig can do and receives only what it can apply, through one written
 degradation table tested with the engine switched off: 16 phoneme classes, to
-five vowel morphs, to two axes, to open-only. Rejected: one implementation per
-rig format — three answers to the same question are three different bugs.
+five vowel morphs, to two axes, to open-only. This is what lets a pack bring a
+face the app has never seen. Rejected: one implementation per rig format — three
+answers to the same question are three different bugs.
 *Cost:* a compromise for every rig instead of the best mapping for one. The 3D
 backend is what will actually prove the contract.
 
@@ -249,7 +318,8 @@ replaces is not free either. It ships when its gate opens, not on a date.
 
 ## Mia, the first agent
 
-Everything a single-purpose assistant would hold in code, she declares:
+The demo scene. Everything a single-purpose assistant would hold in code, she
+declares:
 
 ```toml
 schema_version = 1
@@ -290,11 +360,14 @@ sway   = 0.6
   parser says so in the log — in both directions.
 - **Switching character rotates persona, voice and emotions together**, because
   they are three lines of one file.
-- **A voice engine is added without touching the app.**
+- **The empty `[effects]` block is deliberate.** The slot is parsed and validated
+  before anything consumes it, the same way the scene folder existed before there
+  was a scene: an engine declares where content will go, then goes and builds the
+  consumer.
 - **A broken pack does not break the app**: it stays listed, marked invalid, with
   the reason.
 
-> [DA INSERIRE] Steam page link · [DA INSERIRE] 15 s clip of a character switch.
+> [DA INSERIRE] Steam page link.
 
 ---
 
@@ -333,7 +406,9 @@ Not implemented. In execution order, each gated on a result rather than a date.
 
 1. Procedural motion layer — breathing, micro-saccades, nods on the audio
    envelope. Gate: a blind A/B on five people, four out of five.
-2. 3D avatar as a second backend — the real test of the avatar contract.
+2. 3D avatar as a second backend, and a pack that carries its own model. The real
+   test of the avatar contract — and the point where a creator can bring a face,
+   not only a personality.
 3. Sidecar supervisor as its own subsystem: health sweeps, restart policy,
    suspend and resume.
 4. GPU orchestrator and simultaneity tests — the remaining VRAM war is the
@@ -343,6 +418,9 @@ Not implemented. In execution order, each gated on a result rather than a date.
 6. Chat GUI as a specified subsystem; settings, multi-monitor and DPI.
 7. Security, compliance and first run, including a hard licensing gate before any
    release build.
+8. Workshop: packs distributed and updated through Steam, and third-party
+   character card import. The in-app browser is deliberately deferred — the first
+   months open the Steam page instead.
 
 After 1.0: open microphone with cascaded voice detection, wake word, mid-sentence
 emotion changes, contextual awareness, and optional cloud offload with the user's

@@ -38,9 +38,9 @@ can drop in their favourite character.
 
 Mia is the first agent running on it, and the product going to Steam.
 
-> [DA INSERIRE] 20–30 s demo video: one spoken turn — microphone, answer,
-> lip-sync. · [DA INSERIRE] screenshot of the overlay on a real desktop. ·
-> [DA INSERIRE] 15 s clip: the same engine, two different characters.
+> [DA INSERIRE] 20–30 s demo video
+> [DA INSERIRE] screenshot lipsync
+> [DA INSERIRE] clip swap characters
 
 ---
 

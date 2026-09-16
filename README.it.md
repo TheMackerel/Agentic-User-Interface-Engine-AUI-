@@ -51,9 +51,9 @@ funzionare prima che chiunque possa metterci il suo personaggio preferito.
 
 Mia è il primo agente che ci gira sopra, ed è il prodotto in uscita su Steam.
 
-> [DA INSERIRE] video demo da 20–30 s: un turno parlato — microfono, risposta,
-> lip-sync. · [DA INSERIRE] screenshot dell'overlay su un desktop reale. ·
-> [DA INSERIRE] clip da 15 s: lo stesso motore, due personaggi diversi.
+> [DA INSERIRE] video demo da 20–30 s
+> [DA INSERIRE] screenshot  lip-sync
+> [DA INSERIRE] clip personaggi diversi.
 
 ---
 

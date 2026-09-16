@@ -9,6 +9,18 @@
 > l'assistente da desktop — il motore sotto il personaggio, non un altro
 > personaggio.
 
+**User-made agents.** Un agente — persona, voce, faccia, espressioni, effetti —
+scritto come cartella portabile dalla persona che lo usa, e installabile da
+chiunque altro, invece che compilato dentro un'applicazione.
+
+I termini esistenti dicono cosa un agente *fa*: le interfacce che pilota,
+l'ambiente cloud che lo esegue, l'avatar enterprise che indossa. Nessuno dice
+**chi lo costruisce**. Quella categoria non aveva un nome, quindi
+**user-made agents** è il termine che uso per lei — proposto da
+**Alejandro Lopez** ([TheMackerel](https://github.com/TheMackerel)), settembre
+2026. **AUI Engine** è il runtime costruito per ospitarli, e questa repository
+lo documenta.
+
 ---
 
 ## Cos'è
@@ -440,8 +452,8 @@ con la chiave dell'utente — mai in silenzio, con tre modalità esplicite.
 
 ## Metodo
 
-Lo sviluppo è assistito dall'AI: uso Claude Code come strumento di
-implementazione.
+Il lavoro è cominciato il 16 giugno 2026. Lo sviluppo è assistito dall'AI: uso
+Claude Code come strumento di implementazione.
 
 Mio è il lavoro di architettura, la definizione dei vincoli, la specifica e la
 direzione — cosa si costruisce, in che ordine, cosa conta come accettato, cosa si

@@ -8,6 +8,17 @@
 > plus a Workshop that moves them around. AUI is that layer for the desktop
 > assistant — the engine underneath the character, not another character.
 
+**User-made agents.** An agent — persona, voice, face, expressions, effects —
+authored as a portable folder by the person who uses it, and installable by
+anyone else, rather than compiled into an application.
+
+Existing terms name what an agent *does*: the interfaces it drives, the cloud
+environment that executes it, the enterprise avatar it wears. None of them names
+*who authors it*. That category had no name, so **user-made agents** is the term
+I use for it — proposed by **Alejandro Lopez**
+([TheMackerel](https://github.com/TheMackerel)), September 2026. **AUI Engine**
+is the runtime built to host them, and this repository documents it.
+
 ---
 
 ## What it is
@@ -430,7 +441,8 @@ own key — never silently, with three explicit modes.
 
 ## Method
 
-Development is AI-assisted: I use Claude Code as the implementation tool.
+Work started on 16 June 2026. Development is AI-assisted: I use Claude Code
+as the implementation tool.
 
 Mine is the architecture, the constraints, the specification and the direction —
 what gets built, in what order, what counts as accepted, what is rejected and

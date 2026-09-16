@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you reference this work, or the term \"user-made agents\", please cite it as below."
+title: "AUI Engine — a runtime for user-made agents"
+abstract: >-
+  User-made agents: an agent — persona, voice, face, expressions, effects —
+  authored as a portable folder by the person who uses it, and installable by
+  anyone else, rather than compiled into an application. Existing terms name
+  what an agent does; this one names who authors it. AUI Engine (Agentic User
+  Interface Engine) is the Windows desktop runtime built to host them, entirely
+  on-device: speech recognition, language model and speech synthesis run as
+  local processes owned by the application, with the character, voice, avatar
+  and effects declared by the pack instead of compiled into the app. Term and
+  architecture proposed by Alejandro Lopez, September 2026. This repository is
+  documentation only; the source code is not public.
+type: software
+authors:
+  - family-names: Lopez
+    given-names: Alejandro
+    alias: TheMackerel
+repository-code: "https://github.com/TheMackerel/Agentic-User-Interface-Engine-AUI-"
+url: "https://github.com/TheMackerel/Agentic-User-Interface-Engine-AUI-"
+keywords:
+  - user-made agents
+  - agent pack
+  - desktop AI agent
+  - local-first AI
+  - Windows desktop overlay
+  - AUI Engine
+date-released: 2026-09-15

@@ -387,7 +387,7 @@ sway   = 0.6
   consumatore.
 - **Un pack rotto non rompe l'app**: resta in lista, marcato invalido, col motivo.
 
-> [DA INSERIRE] link alla pagina Steam.
+> [DA INSERIRE] link alla pagina Steam. (ancora non disponibile)
 
 ---
 

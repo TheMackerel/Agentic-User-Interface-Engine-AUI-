@@ -6,17 +6,17 @@
 > **Wallpaper Engine, ma per gli assistenti.** Wallpaper Engine non spedisce
 > quasi nessuno sfondo suo: è la cosa che fa girare quelli che costruiscono gli
 > altri, più un Workshop che li fa circolare. AUI è quello strato per
-> l'assistente da desktop — il motore sotto il personaggio, non un altro
+> l'assistente da desktop: il motore sotto il personaggio, non un altro
 > personaggio.
 
-**User-made agents.** Un agente — persona, voce, faccia, espressioni, effetti —
+**User-made agents.** Un agente (persona, voce, faccia, espressioni, effetti)
 scritto come cartella portabile dalla persona che lo usa, e installabile da
 chiunque altro, invece che compilato dentro un'applicazione.
 
 I termini esistenti dicono cosa un agente *fa*: le interfacce che pilota,
 l'ambiente cloud che lo esegue, l'avatar enterprise che indossa. Nessuno dice
 **chi lo costruisce**. Quella categoria non aveva un nome, quindi
-**user-made agents** è il termine che uso per lei — proposto da
+**user-made agents** è il termine che uso per lei, proposto da
 **Alejandro Lopez** ([TheMackerel](https://github.com/TheMackerel)), settembre
 2026. **AUI Engine** è il runtime costruito per ospitarli, e questa repository
 lo documenta.
@@ -27,33 +27,33 @@ lo documenta.
 
 Il nome è la specifica, una parola alla volta.
 
-- **Agentic** — quello che ci gira sopra è un agente, non un'immagine: ti sente,
+- **Agentic**. Quello che ci gira sopra è un agente, non un'immagine: ti sente,
   risponde con la sua voce, muove la faccia mentre parla e si ricorda cosa hai
   appena detto.
-- **User** — gira sulla macchina di chi lo usa. La sua GPU, i suoi modelli, i
+- **User**. Gira sulla macchina di chi lo usa. La sua GPU, i suoi modelli, i
   suoi file. Nessun account, nessun viaggio verso il cloud, nessun abbonamento.
-- **Interface** — l'agente è una cosa che si guarda e a cui si parla: un overlay
+- **Interface**. L'agente è una cosa che si guarda e a cui si parla: un overlay
   trasparente sul desktop, una faccia, una voce, una finestra di chat. Non
   un'API, non un terminale.
-- **Engine** — l'architettura di base, e niente sopra. Chi è il personaggio, come
+- **Engine**. L'architettura di base, e niente sopra. Chi è il personaggio, come
   suona, come si vede, che espressioni ed effetti ha: quello è contenuto, e il
   contenuto è di chi lo fa.
 
 Quindi un agente è una cartella, e il motore fa girare cartelle. Quella spedita
-con l'app è **Mia** — la scena demo, come la spedisce un motore di gioco. Tutto
+con l'app è **Mia**, la scena demo, come la spedisce un motore di gioco. Tutto
 ciò che la rende *lei* vive in quella cartella e niente vive nell'app: metti
 un'altra cartella accanto alla sua e sul desktop c'è il personaggio di qualcun
 altro, con la sua voce e le sue espressioni, senza ricompilare niente.
 
 **Cosa non è:** una raccolta di agenti AI, e nemmeno un framework per agenti
-rivolto a sviluppatori. È lo strato sotto a entrambi — la parte che deve
+rivolto a sviluppatori. È lo strato sotto a entrambi: la parte che deve
 funzionare prima che chiunque possa metterci il suo personaggio preferito.
 
 Mia è il primo agente che ci gira sopra, ed è il prodotto in uscita su Steam.
 
-> [DA INSERIRE] video demo da 20–30 s
-> [DA INSERIRE] screenshot  lip-sync
-> [DA INSERIRE] clip personaggi diversi.
+> [DA INSERIRE] video demo da 20-30 s: un turno parlato: microfono, risposta,
+> lip-sync. · [DA INSERIRE] screenshot dell'overlay su un desktop reale. ·
+> [DA INSERIRE] clip da 15 s: lo stesso motore, due personaggi diversi.
 
 ---
 
@@ -63,7 +63,7 @@ Spedire un assistente è un'app. Farne una cosa su cui altri costruiscono è un
 problema diverso, e sotto ci stanno quattro vincoli duri.
 
 - **Una singola applicazione cabla un solo personaggio.** Cambiare voce,
-  espressioni, faccia o modello vuol dire ricompilare — che è esattamente ciò
+  espressioni, faccia o modello vuol dire ricompilare, che è esattamente ciò
   che rende un assistente un'app invece di una piattaforma. È il motivo per cui
   esiste un engine.
 - **Tre modelli, tre cicli di vita.** Trascrizione, modello linguistico e sintesi
@@ -80,7 +80,7 @@ problema diverso, e sotto ci stanno quattro vincoli duri.
 
 Il primo punto è il motivo per cui questo è un engine. Gli altri sono il motivo
 per cui il motore deve possedere i processi, il protocollo, i tempi e il recinto
-di sicurezza — e per cui tutto quello che sta sopra quella linea lo **dichiara**
+di sicurezza, e per cui tutto quello che sta sopra quella linea lo **dichiara**
 il pack invece di essere scritto nell'app.
 
 ---
@@ -105,7 +105,7 @@ flowchart LR
         TTS["Sintesi vocale"]
     end
 
-    PACK["Pack dell'agente — una cartella<br/>persona · voce · avatar · emozioni"]
+    PACK["Pack dell'agente, una cartella<br/>persona · voce · avatar · emozioni"]
     MEM[("Memoria locale<br/>profilo + storia scorrevole")]
 
     UI <--> CORE
@@ -148,7 +148,7 @@ sequenceDiagram
     S-->>E: trascrizione e lingua rilevata
     E->>L: persona + scena + istruzioni dell'app + memoria + storia
     L-->>E: flusso di token
-    Note over E: una macchina a stati smista il flusso — cosa si parla, cosa si mostra
+    Note over E: una macchina a stati smista il flusso: cosa si parla, cosa si mostra
     E-->>U: il testo compare mentre scorre
     E->>T: la parte parlata, appena è completa
     T-->>E: audio
@@ -156,8 +156,8 @@ sequenceDiagram
     E-->>U: voce e lip-sync, ancorati all'orologio hardware dell'audio
 ```
 
-**La memoria**, oggi: un profilo persistente — nome, preferenze, progetti, ultimi
-argomenti — iniettato nel prompt, più una finestra di conversazione scorrevole
+**La memoria**, oggi: un profilo persistente (nome, preferenze, progetti, ultimi
+argomenti) iniettato nel prompt, più una finestra di conversazione scorrevole
 limitata da un budget di **caratteri** invece che da un numero di turni, così i
 turni laconici non fanno collassare la continuità e quelli lunghi non fanno
 esplodere il contesto. Il livello a lungo termine è progettato e non scritto
@@ -176,7 +176,7 @@ flowchart LR
 
     subgraph dist["Distribuzione"]
         DIR["Cartella dei pack utente<br/>funziona oggi"]
-        WS["Steam Workshop<br/>iscrizione e aggiornamento — pianificato"]
+        WS["Steam Workshop<br/>iscrizione e aggiornamento, pianificato"]
     end
 
     subgraph engine["AUI runtime"]
@@ -199,17 +199,17 @@ flowchart LR
 Un pack è una cartella nella directory dell'utente, trovata all'avvio accanto a
 quella spedita. Stesso id di un pack bundled, e vince la copia dell'utente: così
 un personaggio spedito si corregge senza una patch dell'app. Un manifest rotto
-non fa sparire il pack: resta in lista, marcato invalido, col motivo — un
+non fa sparire il pack: resta in lista, marcato invalido, col motivo: un
 personaggio che sparisce senza spiegazioni è peggio di uno che non sa sorridere.
 La validazione avvisa invece di rifiutare, con un'eccezione: un pack che punta
 **fuori dalla sua cartella** viene rifiutato, perché quello non è un difetto
-estetico. I motori vocali viaggiano allo stesso modo — una cartella con un
+estetico. I motori vocali viaggiano allo stesso modo: una cartella con un
 manifest, e la prova è un backend funzionante fatto di un manifest e uno script
 breve, senza una riga di codice nativo.
 
 | Funziona oggi | Dichiarato, nessun consumatore | Pianificato |
 |---|---|---|
-| Testo della persona per lingua · binding voce per lingua · vocabolario emozioni · mappa delle espressioni · il pack utente vince sul bundled · recinto dei path · i pack invalidi restano in lista · motori vocali come cartelle | `[effects]` (lo slot è letto, validato e loggato — vuoto di proposito) · le ampiezze `[avatar.motion]` (il motion layer è Roadmap 1) · il modello dell'avatar dentro il pack (lo schema lo accetta; caricare un rig dalla cartella del pack è Roadmap 2) | Steam Workshop come canale di distribuzione · import delle character card di terzi, coi campi che contengono prompt scartati |
+| Testo della persona per lingua · binding voce per lingua · vocabolario emozioni · mappa delle espressioni · il pack utente vince sul bundled · recinto dei path · i pack invalidi restano in lista · motori vocali come cartelle | `[effects]` (lo slot è letto, validato e loggato, vuoto di proposito) · le ampiezze `[avatar.motion]` (il motion layer è Roadmap 1) · il modello dell'avatar dentro il pack (lo schema lo accetta; caricare un rig dalla cartella del pack è Roadmap 2) | Steam Workshop come canale di distribuzione · import delle character card di terzi, coi campi che contengono prompt scartati |
 
 ---
 
@@ -218,10 +218,10 @@ breve, senza una riga di codice nativo.
 La sezione su cui vorrei essere interrogato. Per ognuna: cosa ho scelto, cosa ho
 scartato, cosa è costato.
 
-**1. Rust e Godot — non Electron, non Unity, non uno stack Python.**
+**1. Rust e Godot, non Electron, non Unity, non uno stack Python.**
 Scartati: una webview con backend Python (il default della categoria: pause del
 garbage collector e IPC nel percorso audio), Unity (peso e licenza per un overlay
-2D), Python end-to-end (un runtime da 3–4 GB nell'installer, e un collector sotto
+2D), Python end-to-end (un runtime da 3-4 GB nell'installer, e un collector sotto
 la bocca).
 *Costo:* una superficie FFI stretta con le sue trappole, pagata in codice invece
 che in latenza.
@@ -235,7 +235,7 @@ supportato produce un messaggio invece di un crash muto.
 *Costo:* serializzazione a ogni chiamata, e la supervisione diventa un problema
 mio.
 
-**3. Thread e chiamate bloccanti, nessun runtime asincrono — e cancellazione per
+**3. Thread e chiamate bloccanti, nessun runtime asincrono, e cancellazione per
 identità di generazione.**
 Il livello nativo vive dentro il frame loop del motore, dove un runtime async
 inizializzato per sbaglio è una classe di bug che nessuno vuole debuggare a
@@ -243,7 +243,7 @@ inizializzato per sbaglio è una classe di bug che nessuno vuole debuggare a
 riga e lascia cadere la connessione quando è superato, così il modello smette di
 calcolare invece di essere ignorato. Fermarsi svuota tre serbatoi insieme: ring
 audio, buffer di riproduzione, stato del lip-sync.
-*Costo:* una chiamata già in volo non si annulla — una sintesi in ritardo viene
+*Costo:* una chiamata già in volo non si annulla. Una sintesi in ritardo viene
 buttata all'uscita, quindi si sente silenzio e non una battuta stantia.
 
 **4. Il protocollo è dell'app, non del pack.**
@@ -251,11 +251,11 @@ Testo naturale con un marcatore che separa ciò che si parla da ciò che si most
 soltanto; una macchina a stati pura smista il flusso e toglie i marcatori prima
 che arrivino all'utente o agli altoparlanti. Le character card di terzi si
 importano scartando per costruzione i campi che contengono prompt: un'app che
-esegue i prompt spediti dentro il contenuto è iniettabile tramite contenuto — e
+esegue i prompt spediti dentro il contenuto è iniettabile tramite contenuto, e
 su una piattaforma il contenuto arriva da sconosciuti. Scartato: un turno JSON
 vincolato da grammatica, sotto cui i modelli piccoli degradano male.
 *Costo:* il modello sbaglierà il formato, quindi la scala di degradazione è
-codice — 16 casi golden, ognuno rigiocato a diverse granularità di delta, perché
+codice: 16 casi golden, ognuno rigiocato a diverse granularità di delta, perché
 un marcatore spezzato fra due token non è un bug che trovi a mano.
 
 **5. Un motore vocale è un manifest, non un'integrazione.**
@@ -264,7 +264,7 @@ risposta, che voci offre. Due forme implementate: un server residente e un
 processo per battuta. La prova è un backend fatto di un manifest e uno script
 breve, senza codice nativo: compare in lista, parla e va in sync, senza aver
 ricompilato niente. Ogni formato persistito porta una versione di schema dal
-giorno uno — i reader migrano in avanti la precedente con una copia di sicurezza
+giorno uno: i reader migrano in avanti la precedente con una copia di sicurezza
 e trattano una versione futura ignota come sola lettura.
 *Costo:* il manifest deve descrivere ciò che un'integrazione cablata farebbe e
 basta.
@@ -272,18 +272,18 @@ basta.
 **6. Il motore di sintesi che suonava meglio sostituito da quello piccolo, coi
 numeri.**
 Il candidato col voice cloning misurava RTF 2,01x e 6,8 s al primo audio contro
-un obiettivo di 3–4 s. Al suo posto un modello ONNX da 82M che gira più veloce
+un obiettivo di 3-4 s. Al suo posto un modello ONNX da 82M che gira più veloce
 del tempo reale su CPU.
 *Costo, accettato e messo per iscritto:* niente voice cloning nella 1.0. Il
-guadagno è strutturale — la sintesi esce del tutto dal budget VRAM, e con lei
-esce dall'installer una dipendenza Python/CUDA da 3–4 GB.
+guadagno è strutturale: la sintesi esce del tutto dal budget VRAM, e con lei
+esce dall'installer una dipendenza Python/CUDA da 3-4 GB.
 
 **7. Il lip-sync lo calcola l'app, non lo fornisce il motore.**
 Dal testo ai fonemi con un binario esterno di grafema-fonema lanciato come
 processo separato (che è anche la risposta pulita alla sua licenza), poi in classi
 di visemi, distribuiti sulla durata audio reale. Qualunque motore che restituisce
-audio ottiene il lip-sync. Scartato: pretendere timestamp fonetici dai motori —
-esattamente un candidato li dava.
+audio ottiene il lip-sync. Scartato: pretendere timestamp fonetici dai motori.
+Esattamente un candidato li dava.
 *Costo:* la distribuzione proporzionale è un'approssimazione, non un allineamento
 forzato; e il port ha lasciato vive due implementazioni dello stesso algoritmo,
 quindi esiste un test di parità golden con tolleranza 5 ms che le coglie quando
@@ -295,7 +295,7 @@ il rig sa fare e riceve solo ciò che sa applicare, attraverso **una** tabella d
 degradazione scritta e provata a motore spento: 16 classi fonetiche, cinque morph
 vocalici, due assi, sola apertura. È questo che permette a un pack di portare una
 faccia che l'app non ha mai visto. Scartata: un'implementazione per formato di
-rig — tre risposte alla stessa domanda sono tre bug diversi.
+rig: tre risposte alla stessa domanda sono tre bug diversi.
 *Costo:* un compromesso per ogni rig invece della mappatura migliore per uno. Sarà
 il backend 3D a provare davvero il contratto.
 
@@ -314,16 +314,16 @@ fra due chiamate.
 ## Vincoli e numeri misurati
 
 Macchina di sviluppo: i9-9900KF, RTX 2080 SUPER 8 GB, Windows 10.
-Target dichiarato: la mediana dell'hardware survey di Steam — 6–8 core, 16 GB di
+Target dichiarato: la mediana dell'hardware survey di Steam, 6-8 core, 16 GB di
 RAM, 8 GB di VRAM.
 
 | Misura | Valore | Da dove viene |
 |---|---|---|
-| VRAM, modello 4B a 4 bit, contesto 8k, KV cache quantizzata | **3.396 MiB** — 2.495 modello + 384 contesto + 517 compute | breakdown di memoria del runtime, test registrato |
+| VRAM, modello 4B a 4 bit, contesto 8k, KV cache quantizzata | **3.396 MiB** (2.495 modello + 384 contesto + 517 compute) | breakdown di memoria del runtime, test registrato |
 | VRAM per agente | un modello linguistico; la sintesi gira su CPU per scelta, la trascrizione è CPU-only | vincolo di progetto |
 | Prima parola di una risposta parlata | **~24,5 s → ~9,0 s**, stesso turno | log prima/dopo del lavoro sullo streaming |
 | Trascrizione, clip da 2 s, modello small su CPU | **3,95 s → 1,47 s** (~2,7x) dopo aver dimensionato la finestra di analisi sulla clip | misura registrata |
-| Motore di sintesi scartato | RTF **2,01x**, primo audio **6,8 s** contro un obiettivo di 3–4 s | il bench che ha chiuso la decisione |
+| Motore di sintesi scartato | RTF **2,01x**, primo audio **6,8 s** contro un obiettivo di 3-4 s | il bench che ha chiuso la decisione |
 | Parità del lip-sync con l'implementazione di riferimento | 10 frasi, tolleranza **5 ms** | test golden nella suite |
 | Hitbox per-pixel, overlay 800x700 | readback GPU mediana **1,822 ms/frame** contro un budget di 0,300 ms; il test geometrico che sostituirebbe: **1,033 ms/chiamata** | run strumentata |
 | Accordo fra i due metodi di hit test | **96,87%** su 19.312 punti campionati, e ogni disaccordo in un verso solo | confronto golden |
@@ -378,7 +378,7 @@ sway   = 0.6
 - **Il vocabolario delle emozioni ha un proprietario solo.** La stessa lista
   alimenta il prompt, il filtro che riconosce il tag nello stream e il router che
   accende l'espressione. Se il rig non sa rendere qualcosa che il vocabolario
-  promette, il parser lo dice nel log — in entrambe le direzioni.
+  promette, il parser lo dice nel log, in entrambe le direzioni.
 - **Cambiare personaggio ruota persona, voce ed emozioni insieme**, perché sono
   tre righe dello stesso file.
 - **Il blocco `[effects]` vuoto è voluto.** Lo slot è letto e validato prima che
@@ -397,8 +397,8 @@ sway   = 0.6
 sidecar: tre processi di modello locali posseduti dall'app, kill-on-close, porte
 dall'OS, preflight CPU, crash log locale. Trascrizione su server residente
 CPU-only con fallback a riga di comando. Turno linguistico in streaming con
-cancellazione vera, e un prompt composto da pack, scena e istruzioni dell'app —
-in cache, e ordinato perché il prefisso stabile sopravviva alla cache del
+cancellazione vera, e un prompt composto da pack, scena e istruzioni dell'app,
+in cache e ordinato perché il prefisso stabile sopravviva alla cache del
 modello. Sintesi guidata dal manifest, due forme di motore, precedenza della voce
 utente sopra pack sopra default, recinto sui path che un pack dichiara. Lip-sync
 lato client con test golden di parità. Contratto avatar più un backend 2D, con le
@@ -406,8 +406,8 @@ espressioni che vengono dal manifest, overlay trasparente con click-through e
 silhouette per-pixel. Profilo persistente e storia scorrevole. Superficie di chat
 e striscia di stato, sul branch di lavoro.
 
-**In corso.** L'estrazione dell'avatar è fatta — l'app non nomina più il formato
-del rig fuori dal suo backend — e restano due cose: il costo per frame del test
+**In corso.** L'estrazione dell'avatar è fatta, e l'app non nomina più il formato
+del rig fuori dal suo backend. Restano due cose: il costo per frame del test
 geometrico e l'esclusione dalla silhouette delle aree di interazione che non sono
 disegno. L'hitbox per-pixel è scritta e disattivata, in attesa del suo gate.
 L'accettazione a schermo della scena rifatta è da fare: qui non esiste un motore
@@ -426,14 +426,14 @@ nessuno lo chiami, il che inchioda la build corrente all'inglese.
 Non implementata. In ordine di esecuzione, ognuna vincolata a un risultato e non
 a una data.
 
-1. Motion layer procedurale — respiro, micro-saccadi, cenni sull'inviluppo audio.
+1. Motion layer procedurale: respiro, micro-saccadi, cenni sull'inviluppo audio.
    Gate: un blind A/B su cinque persone, quattro su cinque.
 2. Avatar 3D come secondo backend, e un pack che porta il suo modello. Il vero
-   collaudo del contratto avatar — e il punto in cui un creatore può portare una
+   collaudo del contratto avatar, e il punto in cui un creatore può portare una
    faccia, non solo una personalità.
 3. Supervisore dei sidecar come sottosistema a sé: health sweep, politica di
    riavvio, sospensione e ripresa.
-4. Orchestratore GPU e test di simultaneità — la guerra VRAM che resta è fra il
+4. Orchestratore GPU e test di simultaneità . La guerra VRAM che resta è fra il
    modello linguistico e il gioco che sta girando.
 5. Memoria a lungo termine: un vault in testo semplice che l'utente possiede e
    può leggere fuori dall'app, con un indice locale. Progettata, senza codice.
@@ -441,12 +441,12 @@ a una data.
 7. Sicurezza, compliance e primo avvio, incluso un gate legale duro prima di
    qualunque build di release.
 8. Workshop: pack distribuiti e aggiornati via Steam, e import delle character
-   card di terzi. Il browser in-app è rinviato di proposito — i primi mesi si
+   card di terzi. Il browser in-app è rinviato di proposito: i primi mesi si
    apre la pagina Steam.
 
 Dopo la 1.0: microfono aperto con rilevamento vocale a cascata, wake word, cambio
 di emozione a metà frase, consapevolezza del contesto, e offload cloud opzionale
-con la chiave dell'utente — mai in silenzio, con tre modalità esplicite.
+con la chiave dell'utente, mai in silenzio, con tre modalità esplicite.
 
 ---
 
@@ -456,7 +456,7 @@ Il lavoro è cominciato il 16 giugno 2026. Lo sviluppo è assistito dall'AI: uso
 Claude Code come strumento di implementazione.
 
 Mio è il lavoro di architettura, la definizione dei vincoli, la specifica e la
-direzione — cosa si costruisce, in che ordine, cosa conta come accettato, cosa si
+direzione: cosa si costruisce, in che ordine, cosa conta come accettato, cosa si
 scarta e perché. Il lavoro si specifica in work order numerati con la loro
 accettazione prima di essere scritto; gli scostamenti si verbalizzano il giorno in
 cui si decidono, col motivo, e si verbalizzano anche le strade considerate e
@@ -464,8 +464,8 @@ rifiutate, così non tornano.
 
 La parte che conta è la disciplina di verifica. Niente è "fatto" senza un test,
 una misura o un verdetto umano con un nome sopra, e le cose che solo una persona
-può giudicare — se una bocca sembra parlare, se un'interruzione suona istantanea
-— restano aperte e assegnate invece di essere assunte in silenzio. Ogni numero di
+può giudicare (se una bocca sembra parlare, se un'interruzione suona istantanea)
+restano aperte e assegnate invece di essere assunte in silenzio. Ogni numero di
 questo documento viene da un test, da un log o da una misura registrata sulla
 macchina qui sopra.
 

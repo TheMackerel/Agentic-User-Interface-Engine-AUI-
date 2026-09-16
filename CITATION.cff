@@ -1,8 +1,8 @@
 cff-version: 1.2.0
 message: "If you reference this work, or the term \"user-made agents\", please cite it as below."
-title: "AUI Engine — a runtime for user-made agents"
+title: "AUI Engine: a runtime for user-made agents"
 abstract: >-
-  User-made agents: an agent — persona, voice, face, expressions, effects —
+  User-made agents: an agent (persona, voice, face, expressions, effects)
   authored as a portable folder by the person who uses it, and installable by
   anyone else, rather than compiled into an application. Existing terms name
   what an agent does; this one names who authors it. AUI Engine (Agentic User

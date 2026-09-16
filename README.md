@@ -380,7 +380,7 @@ sway   = 0.6
 - **A broken pack does not break the app**: it stays listed, marked invalid, with
   the reason.
 
-> [DA INSERIRE] Steam page link.
+> [DA INSERIRE] Steam page link. (still not available)
 
 ---
 

@@ -3,12 +3,6 @@
 **Repository di sola documentazione. Il codice sorgente non è pubblico.**
 *[English version](./README.md)*
 
-> **Wallpaper Engine, ma per gli assistenti.** Wallpaper Engine non spedisce
-> quasi nessuno sfondo suo: è la cosa che fa girare quelli che costruiscono gli
-> altri, più un Workshop che li fa circolare. AUI è quello strato per
-> l'assistente da desktop: il motore sotto il personaggio, non un altro
-> personaggio.
-
 **User-made agents.** Un agente (persona, voce, faccia, espressioni, effetti)
 scritto come cartella portabile dalla persona che lo usa, e installabile da
 chiunque altro, invece che compilato dentro un'applicazione.

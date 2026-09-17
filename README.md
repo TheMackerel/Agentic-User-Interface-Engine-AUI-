@@ -3,11 +3,6 @@
 **Documentation-only repository. The source code is not public.**
 *[Versione italiana](./README.it.md)*
 
-> **Wallpaper Engine, but for assistants.** Wallpaper Engine ships almost no
-> wallpapers of its own: it is the thing that runs the ones other people make,
-> plus a Workshop that moves them around. AUI is that layer for the desktop
-> assistant: the engine underneath the character, not another character.
-
 **User-made agents.** An agent (persona, voice, face, expressions, effects)
 authored as a portable folder by the person who uses it, and installable by
 anyone else, rather than compiled into an application.

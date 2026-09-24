@@ -45,7 +45,9 @@ funzionare prima che chiunque possa metterci il suo personaggio preferito.
 
 Mia è il primo agente che ci gira sopra, ed è il prodotto in uscita su Steam.
 
-> [DA INSERIRE] video demo da 20-30 s
+Video: LLM GPU - 3GB VRAM, 5GB RAM, STT / TTS CPU
+
+https://github.com/user-attachments/assets/183ebb94-1ebb-4aa1-a465-2757a9a56f8d
 > [DA INSERIRE] screenshot  lip-sync
 > [DA INSERIRE] clip personaggi diversi.
 

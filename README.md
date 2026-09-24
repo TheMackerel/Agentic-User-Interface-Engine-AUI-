@@ -44,6 +44,7 @@ can drop in their favourite character.
 
 Mia is the first agent running on it, and the product going to Steam.
 
+Video: LLM GPU - 3GB VRAM, 5GB RAM, STT / TTS CPU
 https://github.com/user-attachments/assets/183ebb94-1ebb-4aa1-a465-2757a9a56f8d
 > [DA INSERIRE] screenshot lipsync
 > [DA INSERIRE] clip swap characters

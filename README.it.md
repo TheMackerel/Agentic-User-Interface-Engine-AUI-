@@ -206,7 +206,7 @@ breve, senza una riga di codice nativo.
 
 | Funziona oggi | Dichiarato, nessun consumatore | Pianificato |
 |---|---|---|
-| Testo della persona per lingua · binding voce per lingua · vocabolario emozioni · mappa delle espressioni · il pack utente vince sul bundled · recinto dei path · i pack invalidi restano in lista · motori vocali come cartelle | `[effects]` (lo slot è letto, validato e loggato, vuoto di proposito) · le ampiezze `[avatar.motion]` (il motion layer è Roadmap 1) · il modello dell'avatar dentro il pack (lo schema lo accetta; caricare un rig dalla cartella del pack è Roadmap 2) | Steam Workshop come canale di distribuzione · import delle character card di terzi, coi campi che contengono prompt scartati |
+| Testo della persona per lingua · binding voce per lingua · vocabolario emozioni · mappa delle espressioni · le ampiezze `[avatar.motion]`, che guidano il motion layer · il pack utente vince sul bundled · recinto dei path · i pack invalidi restano in lista · motori vocali come cartelle | `[effects]` (lo slot è letto, validato e loggato, vuoto di proposito) · il modello dell'avatar dentro il pack (lo schema lo accetta; caricare un rig dalla cartella del pack è Roadmap 3) | Steam Workshop come canale di distribuzione · import delle character card di terzi, coi campi che contengono prompt scartati |
 
 ---
 
@@ -293,8 +293,12 @@ degradazione scritta e provata a motore spento: 16 classi fonetiche, cinque morp
 vocalici, due assi, sola apertura. È questo che permette a un pack di portare una
 faccia che l'app non ha mai visto. Scartata: un'implementazione per formato di
 rig: tre risposte alla stessa domanda sono tre bug diversi.
-*Costo:* un compromesso per ogni rig invece della mappatura migliore per uno. Sarà
-il backend 3D a provare davvero il contratto.
+*Costo:* un compromesso per ogni rig invece della mappatura migliore per uno. E un
+limite già trovato: su dieci rig Live2D contati, uno solo ha espressioni che sono
+emozioni; gli altri portano sovrapposizioni (lacrime, occhi a cuore) o niente.
+Tutti quelli verificati espongono però i parametri standard del viso (occhi
+sorridenti, sopracciglia, guance), quindi il contratto dovrà esprimere le
+emozioni anche attraverso quelli. Sarà il backend 3D a provarlo davvero.
 
 **9. Si parla quando il parlato è completo, non quando la generazione è finita.**
 Il marcatore di protocollo garantisce che niente dopo di lui verrà pronunciato:
@@ -326,11 +330,15 @@ RAM, 8 GB di VRAM.
 | Accordo fra i due metodi di hit test | **96,87%** su 19.312 punti campionati, e ogni disaccordo in un verso solo | confronto golden |
 | Dimensione dei modelli su disco | LLM 3,1 GB · trascrizione 190 MB · sintesi 326 MB + 28 MB di voci | file |
 | Ring audio / ring del microfono | 20 s a 24 kHz, ~1,9 MB, lock-free SPSC / 180 s, ~35 MB a 48 kHz, alzato da 60 s dopo che una battuta da 70 s è stata troncata | codice |
-| Suite di test | **100 passati, 0 falliti, 3 ignorati, 2,02 s** | `cargo test`, 15/09/2026 |
+| Attesa di un turno a voce, dal microfono alla voce, modello linguistico su CPU vs GPU | **~7,0 s → ~3,5 s**, per +3,2 GB di VRAM | misura registrata |
+| Motion layer procedurale, costo per frame | **0,062 ms** mediana contro un budget di 1 ms | banco headless |
+| Suite di test | **113 passati, 0 falliti, 3 ignorati, 2,02 s** | `cargo test`, 26/09/2026 |
 
-L'hitbox per-pixel è il modo in cui si decide qui: scritta, misurata e **spenta**,
-perché costa sei volte il suo budget e il metodo più economico che sostituirebbe
-non è gratis nemmeno lui. Entra quando si apre il suo gate, non a una data.
+L'hitbox per-pixel è il modo in cui si decide qui: scritta, misurata e lasciata
+**spenta**. Costa sei volte il suo budget; misurarla ha costretto a misurare anche
+il test geometrico che sostituirebbe, che è risultato costare quasi uguale e
+prendere click sull'aria. Il passaggio vuole un livello di rendering che serve
+comunque al backend 3D, quindi entra lì, una volta sola, quando si apre il suo gate.
 
 ---
 
@@ -399,22 +407,21 @@ in cache e ordinato perché il prefisso stabile sopravviva alla cache del
 modello. Sintesi guidata dal manifest, due forme di motore, precedenza della voce
 utente sopra pack sopra default, recinto sui path che un pack dichiara. Lip-sync
 lato client con test golden di parità. Contratto avatar più un backend 2D, con le
-espressioni che vengono dal manifest, overlay trasparente con click-through e
-silhouette per-pixel. Profilo persistente e storia scorrevole. Superficie di chat
+espressioni che vengono dal manifest, overlay trasparente con click-through,
+verificato a schermo. Profilo persistente e storia scorrevole. Superficie di chat
 e striscia di stato, sul branch di lavoro.
 
-**In corso.** L'estrazione dell'avatar è fatta, e l'app non nomina più il formato
-del rig fuori dal suo backend. Restano due cose: il costo per frame del test
-geometrico e l'esclusione dalla silhouette delle aree di interazione che non sono
-disegno. L'hitbox per-pixel è scritta e disattivata, in attesa del suo gate.
-L'accettazione a schermo della scena rifatta è da fare: qui non esiste un motore
-da riga di comando, quindi quel verdetto è umano.
+**In corso.** Il motion layer procedurale (respiro, oscillazione a riposo,
+saccadi degli occhi, cenni sull'inviluppo del parlato, sommati sopra l'animazione
+del rig) è scritto, gira, e si sta tarando a schermo; il suo gate è un blind A/B.
+L'hitbox per-pixel è scritta e disattivata: entra col backend 3D.
 
-**Debiti noti, tracciati.** Ventuno voci aperte, ognuna registrata con dove è
-stata verificata. Le due che vale la pena dichiarare in pubblico: la build porta
-ancora path assoluti di sviluppo, quindi il repository non parte su un'altra
-macchina senza modifiche; e il selettore di lingua esiste nel codice senza che
-nessuno lo chiami, il che inchioda la build corrente all'inglese.
+**Debiti noti, tracciati.** Quarantuno registrati, ventisei aperti, ognuno con
+dove è stato verificato. I due che vale la pena dichiarare in pubblico: il
+manifest del motore vocale spedito porta ancora un path assoluto di sviluppo,
+quindi su un'altra macchina l'app parte ma resta muta; e il selettore di lingua
+esiste nel codice senza che nessuno lo chiami, il che inchioda la build corrente
+all'inglese.
 
 ---
 
@@ -423,21 +430,22 @@ nessuno lo chiami, il che inchioda la build corrente all'inglese.
 Non implementata. In ordine di esecuzione, ognuna vincolata a un risultato e non
 a una data.
 
-1. Motion layer procedurale: respiro, micro-saccadi, cenni sull'inviluppo audio.
-   Gate: un blind A/B su cinque persone, quattro su cinque.
-2. Avatar 3D come secondo backend, e un pack che porta il suo modello. Il vero
+1. Supervisore dei sidecar come sottosistema a sé: health sweep, politica di
+   riavvio, sospensione e ripresa.
+2. Orchestratore GPU: una macchina a stati della conversazione e un gestore di
+   residenza che decide cosa resta caricato. La guerra VRAM che resta è fra il
+   modello linguistico e il gioco che sta girando, e un test di simultaneità
+   sotto carico fissa i default.
+3. Avatar 3D come secondo backend, e un pack che porta il suo modello. Il vero
    collaudo del contratto avatar, e il punto in cui un creatore può portare una
    faccia, non solo una personalità.
-3. Supervisore dei sidecar come sottosistema a sé: health sweep, politica di
-   riavvio, sospensione e ripresa.
-4. Orchestratore GPU e test di simultaneità . La guerra VRAM che resta è fra il
-   modello linguistico e il gioco che sta girando.
-5. Memoria a lungo termine: un vault in testo semplice che l'utente possiede e
+4. Memoria a lungo termine: un vault in testo semplice che l'utente possiede e
    può leggere fuori dall'app, con un indice locale. Progettata, senza codice.
-6. GUI di chat come sottosistema specificato; impostazioni, multi-monitor e DPI.
-7. Sicurezza, compliance e primo avvio, incluso un gate legale duro prima di
-   qualunque build di release.
-8. Workshop: pack distribuiti e aggiornati via Steam, e import delle character
+5. GUI di chat come sottosistema specificato; impostazioni, multi-monitor e DPI.
+6. Sicurezza, compliance e primo avvio: una configurazione che sonda la macchina
+   e propone quali modelli installare e se farli girare su CPU o GPU, e un gate
+   legale duro prima di qualunque build di release.
+7. Workshop: pack distribuiti e aggiornati via Steam, e import delle character
    card di terzi. Il browser in-app è rinviato di proposito: i primi mesi si
    apre la pagina Steam.
 
@@ -462,9 +470,11 @@ rifiutate, così non tornano.
 La parte che conta è la disciplina di verifica. Niente è "fatto" senza un test,
 una misura o un verdetto umano con un nome sopra, e le cose che solo una persona
 può giudicare (se una bocca sembra parlare, se un'interruzione suona istantanea)
-restano aperte e assegnate invece di essere assunte in silenzio. Ogni numero di
-questo documento viene da un test, da un log o da una misura registrata sulla
-macchina qui sopra.
+restano aperte e assegnate invece di essere assunte in silenzio. Prima di ogni verifica a
+schermo, un'esecuzione headless del motore istanzia la scena e controlla quindici
+cose che un comando può controllare, così alla persona resta solo ciò che una
+persona può giudicare. Ogni numero di questo documento viene da un test, da un
+log o da una misura registrata sulla macchina qui sopra.
 
 > [DA INSERIRE] link ai contatti.
 

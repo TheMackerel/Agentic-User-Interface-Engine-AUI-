@@ -204,7 +204,7 @@ native code in it.
 
 | Works today | Declared, no consumer yet | Planned |
 |---|---|---|
-| Persona text per language · voice binding per language · emotion vocabulary · expression map · user pack overrides bundled · path fence · invalid packs stay listed · voice engines as folders | `[effects]` (the slot is parsed, validated and logged, deliberately empty) · `[avatar.motion]` amplitudes (the motion layer is Roadmap 1) · the avatar model inside the pack (the schema accepts it; loading a rig from the pack folder is Roadmap 2) | Steam Workshop as the distribution channel · importing third-party character cards, with their prompt-bearing fields discarded |
+| Persona text per language · voice binding per language · emotion vocabulary · expression map · `[avatar.motion]` amplitudes, which drive the motion layer · user pack overrides bundled · path fence · invalid packs stay listed · voice engines as folders | `[effects]` (the slot is parsed, validated and logged, deliberately empty) · the avatar model inside the pack (the schema accepts it; loading a rig from the pack folder is Roadmap 3) | Steam Workshop as the distribution channel · importing third-party character cards, with their prompt-bearing fields discarded |
 
 ---
 
@@ -287,8 +287,12 @@ five vowel morphs, to two axes, to open-only. This is what lets a pack bring a
 face the app has never seen. Rejected: one implementation per rig format,
 because three
 answers to the same question are three different bugs.
-*Cost:* a compromise for every rig instead of the best mapping for one. The 3D
-backend is what will actually prove the contract.
+*Cost:* a compromise for every rig instead of the best mapping for one. And a
+limit already found: of ten Live2D rigs counted, only one has expressions that
+are emotions; the others carry overlays (tears, heart eyes) or nothing. All the
+ones checked do expose the standard face parameters (eye smile, brows, cheeks),
+so the contract will have to express emotions through those as well. The 3D
+backend is what will actually prove it.
 
 **9. Speak when the speech is complete, not when generation is finished.**
 The protocol marker guarantees nothing after it will be spoken, so the moment the
@@ -319,11 +323,15 @@ VRAM.
 | Agreement between the two hit tests | **96.87%** over 19,312 sampled points, every disagreement in one direction | golden comparison |
 | Model sizes on disk | LLM 3.1 GB · speech-to-text 190 MB · synthesis 326 MB + 28 MB voices | files |
 | Audio ring / microphone ring | 20 s at 24 kHz, ~1.9 MB, lock-free SPSC / 180 s, ~35 MB at 48 kHz, raised from 60 s after a 70 s utterance was truncated | code |
-| Test suite | **100 passed, 0 failed, 3 ignored, 2.02 s** | `cargo test`, 2026-09-15 |
+| Voice turn, end-to-end wait, language model on CPU vs GPU | **~7.0 s → ~3.5 s**, for +3.2 GB of VRAM | recorded measurement |
+| Procedural motion layer, cost per frame | **0.062 ms** median against a 1 ms budget | headless bench |
+| Test suite | **113 passed, 0 failed, 3 ignored, 2.02 s** | `cargo test`, 2026-09-26 |
 
 The per-pixel hit test is how decisions get made here: written, measured, and
-switched off, because it costs six times its budget and the cheaper method it
-replaces is not free either. It ships when its gate opens, not on a date.
+left switched off. It costs six times its budget; measuring it forced a
+measurement of the geometric test it would replace, which turned out to cost
+about the same and to catch clicks on empty air. Switching over needs a render
+layer the 3D backend needs anyway, so it ships there, once, when its gate opens.
 
 ---
 
@@ -393,21 +401,20 @@ the stable prefix survives the model's own cache. Manifest-driven synthesis, two
 engine shapes, voice precedence user over pack over engine default, path fence on
 everything a pack declares. Client-side lip-sync with a golden parity test.
 Avatar contract plus a 2D backend, expressions coming from the manifest,
-transparent click-through overlay with a per-pixel silhouette. Persisted profile
-and rolling history. Chat surface and status strip, on the working branch.
+transparent click-through overlay, verified on screen. Persisted profile and
+rolling history. Chat surface and status strip, on the working branch.
 
-**In progress.** The avatar extraction is done, and the app no longer names the rig
-format outside its backend. Two items are left: the per-frame cost of the
-geometric hit test, and excluding non-drawing interaction areas from the
-silhouette. The per-pixel hit test is written and disabled, waiting on its gate.
-Screen-level acceptance of the rebuilt scene is pending: there is no headless
-engine here, so that verdict is a human one.
+**In progress.** The procedural motion layer (breathing, idle sway, eye
+saccades, nods on the speech envelope, summed on top of the rig's own
+animation) is written, running, and being tuned on screen; its gate is a blind
+A/B test. The per-pixel hit test is written and disabled: it ships with the 3D
+backend.
 
-**Known debts, tracked.** Twenty-one open items, each recorded with where it was
-verified. The two worth stating in public: the build still carries absolute
-development paths, so the repository does not start unmodified on another
-machine; and the language selector exists in code with nothing calling it, which
-pins the current build to English.
+**Known debts, tracked.** Forty-one recorded, twenty-six open, each with where
+it was verified. The two worth stating in public: the bundled voice engine's
+manifest still carries an absolute development path, so on another machine the
+app starts but stays mute; and the language selector exists in code with nothing
+calling it, which pins the current build to English.
 
 ---
 
@@ -415,21 +422,21 @@ pins the current build to English.
 
 Not implemented. In execution order, each gated on a result rather than a date.
 
-1. Procedural motion layer: breathing, micro-saccades, nods on the audio
-   envelope. Gate: a blind A/B on five people, four out of five.
-2. 3D avatar as a second backend, and a pack that carries its own model. The real
+1. Sidecar supervisor as its own subsystem: health sweeps, restart policy,
+   suspend and resume.
+2. GPU orchestrator: a conversation state machine and a residency manager that
+   decide what stays loaded. The remaining VRAM war is the language model against
+   whatever game is running, and a simultaneity test under load sets the defaults.
+3. 3D avatar as a second backend, and a pack that carries its own model. The real
    test of the avatar contract, and the point where a creator can bring a face,
    not only a personality.
-3. Sidecar supervisor as its own subsystem: health sweeps, restart policy,
-   suspend and resume.
-4. GPU orchestrator and simultaneity tests. The remaining VRAM war is the
-   language model against whatever game is running.
-5. Long-term memory: a plain-text vault the user owns and can read outside the
+4. Long-term memory: a plain-text vault the user owns and can read outside the
    app, with a local index. Designed, no code.
-6. Chat GUI as a specified subsystem; settings, multi-monitor and DPI.
-7. Security, compliance and first run, including a hard licensing gate before any
-   release build.
-8. Workshop: packs distributed and updated through Steam, and third-party
+5. Chat GUI as a specified subsystem; settings, multi-monitor and DPI.
+6. Security, compliance and first run: a setup that probes the machine and
+   proposes which models to install and whether they run on CPU or GPU, and a
+   hard licensing gate before any release build.
+7. Workshop: packs distributed and updated through Steam, and third-party
    character card import. The in-app browser is deliberately deferred: the first
    months open the Steam page instead.
 
@@ -454,8 +461,10 @@ The part that matters is the verification discipline. Nothing is called done
 without a test, a measurement or a named human verdict, and the things only a
 person can judge (whether a mouth looks like speech, whether an interruption
 sounds instant) stay open with a name on them instead of being quietly assumed.
-Every number in this document comes from a test, a log or a recorded measurement
-on the machine above.
+Before any on-screen check, a headless run of the engine instantiates the scene
+and checks fifteen things a command can check, so what is left for a person is
+only what a person can judge. Every number in this document comes from a test, a
+log or a recorded measurement on the machine above.
 
 > [DA INSERIRE] contact link.
 

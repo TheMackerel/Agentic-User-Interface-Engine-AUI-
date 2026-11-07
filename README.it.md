@@ -47,6 +47,7 @@ Mia è il primo agente che ci gira sopra, ed è il prodotto in uscita su Steam.
 
 > Video: Recorded on an RTX 2080 SUPER: LLM (Gemma 3 4B, Q4_0) on GPU, ~3 GB VRAM ·
 ~5 GB RAM · speech-to-text and text-to-speech (Kokoro) on CPU.
+
 https://github.com/user-attachments/assets/7b04353a-7ca5-48e3-bebb-3f203be10128
 
 > Lip-Sync

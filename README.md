@@ -44,12 +44,15 @@ can drop in their favourite character.
 
 Mia is the first agent running on it, and the product going to Steam.
 
-Video: Recorded on an RTX 2080 SUPER: LLM (Gemma 3 4B, Q4_0) on GPU, ~3 GB VRAM ·
-~5 GB RAM · speech-to-text and text-to-speech on CPU.
+> Video: Recorded on an RTX 2080 SUPER: LLM (Gemma 3 4B, Q4_0) on GPU, ~3 GB VRAM ·
+~5 GB RAM · speech-to-text and text-to-speech (Kokoro) on CPU.
 
-https://github.com/user-attachments/assets/183ebb94-1ebb-4aa1-a465-2757a9a56f8d
-> [DA INSERIRE] screenshot lipsync
-> [DA INSERIRE] clip swap characters
+https://github.com/user-attachments/assets/7b04353a-7ca5-48e3-bebb-3f203be10128
+
+> Lip-Sync
+<img width="1092" height="1092" alt="MouthParameters_W39" src="https://github.com/user-attachments/assets/62d94fc5-0684-41be-8eba-d1933cb77a21" />
+
+> [DA INSERIRE] clip personaggi diversi.
 
 ---
 
